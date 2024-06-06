@@ -4,6 +4,8 @@
 
 Original Code: [AI! - Github Gist][1]
 
+为博客添加摘要支持详见 [adapter.md][2]
+
 ## Deploying
 
 进入 Cloudflare Workers 创建页面
@@ -109,9 +111,9 @@ addEventListener("DOMContentLoaded", () => {
 </html>
 ```
 
-[1]: <https://gist.github.com/FloatSheep/5b54ffadf704379295c3a6dc950b9b97>
-
 修改并保存上述文件，然后打开临时网页服务器进行测试，得到如下（或类似结果）
 
 ![image](https://github.com/FloatSheep/Qwen-Post-Summary/assets/142888681/890cfab4-38e4-4382-9dac-e58efa9cd858)
 
+[1]: <https://gist.github.com/FloatSheep/5b54ffadf704379295c3a6dc950b9b97>
+[2]: <adapter.md>
