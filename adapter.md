@@ -32,7 +32,7 @@ const postBeforeContent = document.getElementById("").textContent; // 引号中�
 // const postBeforeContent = document.getElementsByClassName("").textContent; // 引号中填写文章内容容器的 class
 ```
 
-然后修改 apiUrl
+修改 apiUrl
 
 ```javascript
 const apiUrl = "" // 这里填写你获得的 API 地址
@@ -40,7 +40,7 @@ const apiUrl = "" // 这里填写你获得的 API 地址
 
 保存到 JS 文件中（这里假设保存在 /js/summary.js）
 
-然后在主题 / 网页中引入 JS 脚本并添加 HTML 元素
+在主题 / 网页中引入 JS 脚本并添加 HTML 元素
 
 ```html
 <script src="/js/summary.js" /> <!-- 这里是常规引入方案，可能需要更改（比如 hexo-theme-butterfly 应该在 config.yml 的 inject 中引入 -->
