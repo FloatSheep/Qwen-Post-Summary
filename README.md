@@ -36,7 +36,7 @@ addEventListener("DOMContentLoaded", () => {
 
   // 测试数据
   const postTitle = "《Hi,Cloudflare Workers AI》";
-  const postContent = `
+  const postBeforeContent = `
     这货其实已经发布有段时间了，但，效果嘛，差强人意。可人家免费啊，还自带 Workers 调用，省去鉴权若干代码，自个儿绑个域名，每分钟 100 次，美滋滋～
     
     以下代码配套「哔哔广场」食用，当然也可自行折腾。
@@ -80,6 +80,7 @@ addEventListener("DOMContentLoaded", () => {
     @cf/mistral/mistral-7b-instruct-v0.1
     @cf/meta/llama-2-7b-chat-int8
   `;
+  const postContent = postBeforeContent.replace(/\n/g, '').replace(/[ ]+/g, ' ').replace(/<pre>[\s\S]*?<\/pre>/g, '').substring(0, 1800);
 
   const evSource = new EventSource(apiUrl + `/?q=${postTitle}，文章内容：${postContent}`);
   evSource.onmessage = (event) => {
