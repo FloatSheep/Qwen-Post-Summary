@@ -50,4 +50,25 @@ const apiUrl = "" // 这里填写你获得的 API 地址
 <p id="ai-output"></p> <!-- 这里是常规引入方案，放在文章页的顶部（文章内容容器之前）且可能需要更改（比如 hexo-theme-butterfly 应该在文章渲染的源码中使用 p#ai-output -->
 ```
 
+## Hugo 适配
+
+这里有现成的 Hugo 组件 [FloatBlog/layouts/partials/cfai.html][2]
+
+你可以将其下载下来放在自己的 Hugo partials 文件夹中
+
+接着，你需要修改文章的渲染，这一步根据 Hugo 主题的不同，修改的文件也不同
+
+以 Congo 主题为例，你需要修改 `/layouts/_default/single.html` 文件,在第 43 行后添加如下内容：
+
+```html
+  {{ if eq .Type "posts" }}
+    {{ if .Params.aiSummary }}
+      {{ partial "cfai.html" . }}
+    {{ end }}
+  {{ end }}
+```
+
+最后，在你的文章 front-matter 中添加 `aiSummary: true` 就会显示摘要了
+
 [1]: </README.md>
+[2]: <https://github.com/FloatSheep/FloatBlog/blob/main/layouts/partials/cfai.html>
