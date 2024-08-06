@@ -1,5 +1,7 @@
 # Qwen-Post-Summary
 
+> 请参考 [这篇文章](https://mabbs.github.io/2024/07/03/ai-summary.html) 使用更加完善的文章摘要
+
 使用 Cloudflare Worker AI 的通义千问模型为你的文章生成摘要
 
 Original Code: [AI! - Github Gist][1]
