@@ -3,7 +3,7 @@ import { kv } from "@vercel/kv";
 import { ofetch } from "ofetch";
 import * as theInterface from "../src/interface/main";
 import getEnv from "../src/utils/getEnv";
-import { setGlobalDispatcher, ProxyAgent } from "undici";
+/* import { setGlobalDispatcher, ProxyAgent } from "undici"; */
 
 const headerConfig = [
   { name: "Access-Control-Allow-Origin", value: "*" },
@@ -12,9 +12,9 @@ const headerConfig = [
   { name: "Access-Control-Max-Age", value: "1728000" },
 ];
 
-const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
 if (getEnv("PROXY_ENABLE")) {
-  setGlobalDispatcher(proxyAgent);
+  /*   const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
+  setGlobalDispatcher(proxyAgent); */
 }
 
 export default async (req: VercelRequest, res: VercelResponse) => {
@@ -60,9 +60,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     const postContent = await kv.get(reqBody.postId);
     console.log("postContent", postContent); // debug use
     const requestBody = {
-      content: req.body.content,
+      content: reqBody.content,
     };
-    console.log("requestBody", requestBody); // debug use
     if (!postContent || postContent === null) {
       const summaryContent = await ofetch<theInterface.summaryResponse>(
         getEnv("SUMMARY_API"),
@@ -70,8 +69,18 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           body: requestBody,
           method: "POST",
           timeout: 60000,
-          retry: 5,
-          retryDelay: 300,
+          parseResponse: JSON.parse,
+          async onRequestError({ request, options, error }) {
+            console.log("ofetch 请求失败：", request, options, error);
+          },
+          async onResponseError({ request, response, options }) {
+            console.log(
+              "ofetch [fetch response error]",
+              request,
+              response.status,
+              response.body
+            );
+          },
         }
       );
 
@@ -103,7 +112,6 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       code: -1,
       message: `处理文章摘要失败: ${error}`,
     });
-
-    throw new Error(`${error}`);
+    console.log("O Catch error", error);
   }
 };

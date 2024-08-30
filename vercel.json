@@ -13,5 +13,10 @@
       "source": "/index.html",
       "destination": "/api/index"
     }
-  ]
+  ],
+  "functions": {
+    "api/**/*": {
+      "maxDuration": 60
+    }
+  }
 }
