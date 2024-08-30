@@ -1,0 +1,3 @@
+worker
+dist
+.env.development.local

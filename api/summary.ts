@@ -3,14 +3,19 @@ import { kv } from "@vercel/kv";
 import { ofetch } from "ofetch";
 import * as theInterface from "../src/interface/main";
 import getEnv from "../src/utils/getEnv";
-import { setGlobalDispatcher, ProxyAgent } from "undici";
+/* import { setGlobalDispatcher, ProxyAgent } from "undici"; */
 
 const headerConfig = [
   { name: "Access-Control-Allow-Origin", value: "*" },
-  { name: "Access-Control-Allow-Methods", value: "POST" },
+  { name: "Access-Control-Allow-Methods", value: "*" },
   { name: "Access-Control-Allow-Headers", value: "*" },
   { name: "Access-Control-Max-Age", value: "1728000" },
 ];
+
+if (getEnv("PROXY_ENABLE")) {
+  /*   const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
+  setGlobalDispatcher(proxyAgent); */
+}
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   headerConfig.map((configItem) => {
@@ -19,7 +24,16 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   const reqBody = req.body;
 
-  if (req.method !== "POST") {
+  console.log("reqBody", reqBody); // debug use
+
+  if (req.method === "OPTIONS") {
+    res.status(200).json({
+      code: 1,
+      message: "OPTIONS 请求成功",
+    });
+
+    return;
+  } else if (req.method !== "POST") {
     res.status(405).json({
       code: 0,
       message: `请求方式应为 POST，而不是 ${req.method}`,
@@ -44,22 +58,37 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   try {
     const postContent = await kv.get(reqBody.postId);
+    console.log("postContent", postContent); // debug use
     const requestBody = {
-      content: req.body.content,
+      content: reqBody.content,
     };
     if (!postContent || postContent === null) {
-      const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
-      getEnv("PROXY_ENABLE") ? setGlobalDispatcher(proxyAgent) : null;
       const summaryContent = await ofetch<theInterface.summaryResponse>(
         getEnv("SUMMARY_API"),
         {
           body: requestBody,
           method: "POST",
+          timeout: 60000,
           parseResponse: JSON.parse,
+          async onRequestError({ request, options, error }) {
+            console.log("ofetch 请求失败：", request, options, error);
+          },
+          async onResponseError({ request, response, options }) {
+            console.log(
+              "ofetch [fetch response error]",
+              request,
+              response.status,
+              response.body
+            );
+          },
         }
       );
 
+      console.log("summaryContent", summaryContent); // debug use
+
       await kv.set(reqBody.postId, summaryContent.response);
+
+      console.log("kvAfter summaryContent", postContent); // debug use
 
       res.status(200).json({
         code: 1,
@@ -83,7 +112,6 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       code: -1,
       message: `处理文章摘要失败: ${error}`,
     });
-
-    return;
+    console.log("O Catch error", error);
   }
 };
