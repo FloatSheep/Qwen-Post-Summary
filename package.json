@@ -1,0 +1,24 @@
+{
+  "name": "qwen-vercel-middleware",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "vercel dev",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.5.1",
+    "@vercel/node": "^3.2.10",
+    "typescript": "^5.5.4",
+    "undici": "^6.19.8",
+    "vercel": "^37.2.1"
+  },
+  "dependencies": {
+    "@vercel/kv": "^2.0.0",
+    "ofetch": "^1.3.4"
+  }
+}
