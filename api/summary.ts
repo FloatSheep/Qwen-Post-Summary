@@ -12,6 +12,11 @@ const headerConfig = [
   { name: "Access-Control-Max-Age", value: "1728000" },
 ];
 
+const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
+if (getEnv("PROXY_ENABLE")) {
+  setGlobalDispatcher(proxyAgent);
+}
+
 export default async (req: VercelRequest, res: VercelResponse) => {
   headerConfig.map((configItem) => {
     res.setHeader(configItem.name, configItem.value);
@@ -19,7 +24,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   const reqBody = req.body;
 
-  console.log("reqBody", reqBody) // debug use
+  console.log("reqBody", reqBody); // debug use
 
   if (req.method === "OPTIONS") {
     res.status(200).json({
@@ -53,16 +58,12 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   try {
     const postContent = await kv.get(reqBody.postId);
-    console.log("postContent", postContent) // debug use
+    console.log("postContent", postContent); // debug use
     const requestBody = {
       content: req.body.content,
     };
-    console.log("requestBody", requestBody) // debug use
+    console.log("requestBody", requestBody); // debug use
     if (!postContent || postContent === null) {
-      const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
-      if (getEnv("PROXY_ENABLE")) {
-        setGlobalDispatcher(proxyAgent);
-      }
       const summaryContent = await ofetch<theInterface.summaryResponse>(
         getEnv("SUMMARY_API"),
         {
@@ -74,12 +75,11 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         }
       );
 
-      console.log("summaryContent", summaryContent) // debug use
+      console.log("summaryContent", summaryContent); // debug use
 
       await kv.set(reqBody.postId, summaryContent.response);
 
-      console.log("kvAfter summaryContent", summaryContent) // debug use
-
+      console.log("kvAfter summaryContent", postContent); // debug use
 
       res.status(200).json({
         code: 1,
