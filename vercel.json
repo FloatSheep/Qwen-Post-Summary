@@ -1,5 +1,5 @@
 {
-  "regions": ["iad1"],
+  "regions": ["sin1"],
   "rewrites": [
     {
       "source": "/",
