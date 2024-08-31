@@ -31,36 +31,55 @@ function addCursor(type) {
 }
 
 // 发起 POST 请求
-fetch(apiUrl, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(requestBody),
+fetch(`${apiUrl}?postId=${postId}`, {
+  method: "GET",
 })
   .then((response) => response.json())
   .then((data) => {
-    if (data.code === 1) {
+    if (data.isSave) {
+      // 存入摘要
+      summaryData = data.data;
       // 成功，模拟打字效果
-      const outputElement = outputCursor;
-      const text = data.data;
-      let index = 0;
-
-      const typeWriter = () => {
-        if (index < text.length) {
-          outputElement.textContent += text.charAt(index);
-          index++;
-          addCursor(true);
-          setTimeout(typeWriter, 100); // 调整打字速度
-        } else {
-          document.querySelector(".ai-cursor")?.remove(); // 移除光标
-        }
-      };
-
-      typeWriter();
+      inputSummary(data.data);
     } else {
-      // 客户端错误，输出响应内容
-      console.error("Error:", data);
+      // 如果 isSave 为 false，发送 POST 请求
+      fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 1) {
+            // 存入摘要
+            summaryData = data.data;
+            // 成功，模拟打字效果
+            const outputElement = outputCursor;
+            const text = data.data;
+            let index = 0;
+
+            const typeWriter = () => {
+              if (index < text.length) {
+                outputElement.textContent += text.charAt(index);
+                index++;
+                addCursor(true);
+                setTimeout(typeWriter, 100); // 调整打字速度
+              } else {
+                document.querySelector(".ai-cursor")?.remove(); // 移除光标
+              }
+            };
+
+            typeWriter();
+          } else {
+            // 客户端错误，输出响应内容
+            console.error("Error:", data);
+          }
+        })
+        .catch((error) => {
+          console.error("Fetch error:", error);
+        });
     }
   })
   .catch((error) => {

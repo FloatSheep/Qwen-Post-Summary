@@ -48,8 +48,12 @@
 
 简易实现附带了 FakeGPT 的鼠标光标特效
 
+API 接口文档请查看 [APIFox][4]
+
 [1]: </worker/worker.js>
 
 [2]: </client>
 
 [3]: </api/summary.ts>
+
+[4]: <https://apifox.com/apidoc/shared-20d0a640-a6d3-40b2-87ba-fddfa1c10cc9>
