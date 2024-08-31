@@ -12,10 +12,10 @@ const headerConfig = [
   { name: "Access-Control-Max-Age", value: "1728000" },
 ];
 
-if (getEnv("PROXY_ENABLE")) {
-  /*   const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
-  setGlobalDispatcher(proxyAgent); */
-}
+/* if (getEnv("PROXY_ENABLE")) {
+  const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
+  setGlobalDispatcher(proxyAgent);
+} */
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   headerConfig.map((configItem) => {
@@ -23,6 +23,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   });
 
   const reqBody = req.body;
+  const query = req.query;
 
   console.log("reqBody", reqBody); // debug use
 
@@ -32,6 +33,40 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       message: "OPTIONS 请求成功",
     });
 
+    return;
+  } else if (req.method === "GET") {
+    if (query.postId) {
+      const { postId } = req.query;
+      const singlePostId = typeof postId === 'string' ? postId : postId[0];
+      const summaryData = await kv.get(singlePostId);
+
+      if (summaryData != null || summaryData != undefined) {
+        res.status(200).json({
+          code: 1,
+          message: "获取文章摘要成功",
+          data: summaryData,
+          isSave: true,
+        });
+
+        return;
+      } else {
+        res.status(200).json({
+          code: 1,
+          message: "文章摘要不存在",
+          data: null,
+          isSave: false,
+        });
+
+      return;
+      }
+    } else {
+      res.status(400).json({
+        code: 0,
+        message: "请求参数错误",
+      });
+
+      return;
+    }
     return;
   } else if (req.method !== "POST") {
     res.status(405).json({
@@ -68,7 +103,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         {
           body: requestBody,
           method: "POST",
-          timeout: 60000,
+          timeout: 6000000,
           parseResponse: JSON.parse,
           async onRequestError({ request, options, error }) {
             console.log("ofetch 请求失败：", request, options, error);
@@ -94,7 +129,6 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         code: 1,
         message: "处理文章摘要成功",
         data: summaryContent.response,
-        cache: false,
       });
       return;
     } else {
@@ -102,7 +136,6 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         code: 1,
         message: "处理文章摘要成功",
         data: postContent,
-        cache: true,
       });
 
       return;
