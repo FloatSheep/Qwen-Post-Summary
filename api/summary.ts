@@ -12,10 +12,10 @@ const headerConfig = [
   { name: "Access-Control-Max-Age", value: "1728000" },
 ];
 
-if (getEnv("PROXY_ENABLE")) {
-  /*   const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
-  setGlobalDispatcher(proxyAgent); */
-}
+/* if (getEnv("PROXY_ENABLE")) {
+  const proxyAgent = new ProxyAgent("http://127.0.0.1:7890");
+  setGlobalDispatcher(proxyAgent);
+} */
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   headerConfig.map((configItem) => {
@@ -68,7 +68,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         {
           body: requestBody,
           method: "POST",
-          timeout: 60000,
+          timeout: 6000000,
           parseResponse: JSON.parse,
           async onRequestError({ request, options, error }) {
             console.log("ofetch 请求失败：", request, options, error);
