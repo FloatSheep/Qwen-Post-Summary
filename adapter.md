@@ -20,9 +20,10 @@
 
 记录下 id（或者 class）
 
-将 [README.md][1] 中示例的测试数据改成如下：
+修改 apiUrl
 
 ```javascript
+const output = document.getElementById("ai-output")
 // 测试数据（方便定位）
 const postTitle = document.getElementById("").textContent; // 引号中填写文章 Title 的 id
 // 如果你获取的是 class
@@ -30,12 +31,48 @@ const postTitle = document.getElementById("").textContent; // 引号中填写文
 const postBeforeContent = document.getElementById("").textContent; // 引号中填写文章内容容器的 id
 // 如果你获取的是 class
 // const postBeforeContent = document.getElementsByClassName("").textContent; // 引号中填写文章内容容器的 class
-```
 
-修改 apiUrl
+async function getArticleSummary(query) {
+  // 对查询内容进行编码
+  const encodedQuery = encodeURIComponent(query);
+  // 替换为你的 Worker 地址
+  const apiUrl = "https://your-worker.example.com";  
+  
+  // 创建 EventSource 实例
+  const eventSource = new EventSource(`${apiUrl}?q=${encodedQuery}`);
+  
+  let summaryContent = "";
+  const outputElement = document.getElementById("ai-output");
 
-```javascript
-const apiUrl = "" // 这里填写你获得的 API 地址
+  // 处理流式数据
+  eventSource.addEventListener("message", (event) => {
+    summaryContent += event.data;
+    outputElement.textContent = summaryContent;
+  });
+
+  // 错误处理
+  eventSource.onerror = () => {
+    outputElement.textContent = "摘要生成失败，请重试";
+    eventSource.close();
+  };
+
+  return new Promise((resolve) => {
+    eventSource.addEventListener("done", () => {
+      resolve(summaryContent);
+      eventSource.close();
+    });
+  });
+}
+
+// 调用示例
+
+document.addEventListener("DOMContentLoaded", () => {
+  const postTitle = document.getElementById("title-id").textContent; 
+  const postContent = document.getElementById("content-id").textContent;
+  const fullText = `标题：${postTitle}\n内容：${postContent}`;
+  
+  getArticleSummary(fullText).then().catch(console.error);
+}
 ```
 
 保存到 JS 文件中（这里假设保存在 /js/summary.js）
