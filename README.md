@@ -6,6 +6,11 @@
 
 - Cloudflare Worker 将等待 AI 完成后才进行输出，因此无法实现流式输出（需要前端进行实现）
 
+> [!WARNING]
+> 用前须知：此分支需要重新部署 Cloudflare Worker 代码
+> 
+> 使用本项目，最好具备一定的自我 debug 能力
+
 ## 快速开始
 
 在 main 分支的基础上，将 Cloudflare Worker 代码修改为 [worker.js][1] 中的代码，然后点击下方的 Deploy 按钮，快速部署本项目
