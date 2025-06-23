@@ -8,6 +8,9 @@ Original Code: [AI! - Github Gist][1]
 
 为博客添加摘要支持详见 [adapter.md][2]
 
+> [!WARNING]
+> 使用本项目，最好具备一定的自我 debug 能力
+
 ## Deploying
 
 进入 Cloudflare Workers 创建页面
