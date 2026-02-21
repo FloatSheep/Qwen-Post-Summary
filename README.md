@@ -2,6 +2,10 @@
 
 > 请参考 [这篇文章](https://mabbs.github.io/2024/07/03/ai-summary.html) 或 [Qwen-Vercel-Middleware](https://github.com/FloatSheep/Qwen-Post-Summary/tree/vercel) 使用更加完善的文章摘要
 
+> [!WARNING]
+> 由于 Cloudflare 对于模型的更新，原模型 `@cf/qwen/qwen1.5-14b-chat-awq` 以于 **2025-10-01** 废弃，在此更新为 `@cf/qwen/qwen3-30b-a3b-fp8`
+> 请注意 **Nervous** 的消耗
+
 使用 Cloudflare Worker AI 的通义千问模型为你的文章生成摘要
 
 Original Code: [AI! - Github Gist][1]
