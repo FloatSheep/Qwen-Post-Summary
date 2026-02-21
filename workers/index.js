@@ -31,7 +31,7 @@ export default {
         { role: "user", content: query }
       ]
 
-    const stream = await env.AI.run('@cf/qwen/qwen1.5-14b-chat-awq', {
+    const stream = await env.AI.run('@cf/qwen/qwen3-30b-a3b-fp8', {
       messages,
       stream: true,
     });
