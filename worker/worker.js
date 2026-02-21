@@ -38,7 +38,7 @@ export default {
         { role: "user", content: content }
       ]
 
-    const response = await env.AI.run('@cf/qwen/qwen1.5-14b-chat-awq', {
+    const response = await env.AI.run('@cf/qwen/qwen3-30b-a3b-fp8', {
       messages,
     });
 
