@@ -15,11 +15,88 @@ const headerConfig = [
 /* const proxyAgent = new ProxyAgent("http://127.0.0.1:10808");
 setGlobalDispatcher(proxyAgent); */
 
+// 获取允许的来源列表
+const getAllowedOrigins = (): string[] => {
+  const origins = process.env.ALLOWED_ORIGINS;
+  if (!origins) return [];
+  return origins.split(",").map((origin) => origin.trim());
+};
+
+// 检查是否为允许的来源
+const isValidReferer = (referer: string | undefined): boolean => {
+  if (!referer) return false;
+
+  const allowedOrigins = getAllowedOrigins();
+  if (allowedOrigins.length === 0) return true; // 如果没有设置允许的来源，则不限制
+
+  try {
+    const refererUrl = new URL(referer);
+    const refererHostname = refererUrl.hostname;
+
+    return allowedOrigins.some((origin) => {
+      // 如果origin包含协议（http://或https://），则按完整URL处理
+      if (origin.includes("://")) {
+        try {
+          const allowedUrl = new URL(origin);
+          const allowedOrigin = `${allowedUrl.protocol}//${allowedUrl.hostname}`;
+          const refererOrigin = `${refererUrl.protocol}//${refererUrl.hostname}`;
+          return refererOrigin === allowedOrigin;
+        } catch (e) {
+          console.warn(`Invalid origin in ALLOWED_ORIGINS: ${origin}`);
+          return false;
+        }
+      } else {
+        // 如果origin不包含协议，认为是域名（支持主域名及子域名匹配）
+        return (
+          refererHostname === origin || refererHostname.endsWith("." + origin)
+        );
+      }
+    });
+  } catch (e) {
+    console.error("Error parsing referer URL:", referer, e);
+    return false;
+  }
+};
+
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
     headerConfig.map((configItem) => {
       res.setHeader(configItem.name, configItem.value);
     });
+
+    const referer = req.headers.referer || req.headers.referrer;
+    const origin = req.headers.origin;
+    const forwardedReferer = req.headers["x-forwarded-referer"];
+
+    // 组合所有可能的来源头部信息进行检查
+    const combinedReferer = referer || forwardedReferer;
+    const normalizedReferer = Array.isArray(combinedReferer)
+      ? combinedReferer[0]
+      : combinedReferer;
+    const normalizedOrigin = Array.isArray(origin) ? origin[0] : origin;
+
+    // 检查 Origin 或 Referer 是否有效
+    const isRefererValid = isValidReferer(normalizedReferer);
+    const isOriginValid = isValidReferer(normalizedOrigin);
+
+    console.log(
+      "🤤 请求来源 Referer",
+      normalizedReferer,
+      "Origin",
+      normalizedOrigin,
+      JSON.stringify(req.headers)
+    );
+
+    if (!isRefererValid && !isOriginValid) {
+      res.status(403).json({
+        code: 0,
+        message: "Forbidden: Invalid referer or origin",
+      });
+
+      console.log("🤤 请求来源无效，已拒绝访问", normalizedReferer, normalizedOrigin, isRefererValid, isOriginValid);
+
+      return;
+    }
 
     const reqBody = req.body;
     const query = req.query;

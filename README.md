@@ -21,6 +21,8 @@
 
 `PROXY_ENABLE` 请填写 false，**勿动**
 
+`ALLOWED_ORIGINS` 填写自己的域名，多个请用英文逗号隔开
+
 如果有需要，可以修改项目 [api/summary.ts][3] 中的 headerConfig 来限制子域
 
 接着添加 KV 储存，如图，进入 Storage 选项卡
