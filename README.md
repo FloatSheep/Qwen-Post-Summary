@@ -8,18 +8,16 @@
 
 > [!WARNING]
 > 用前须知：此分支需要重新部署 Cloudflare Worker 代码
-> 
+>
 > 使用本项目，最好具备一定的自我 debug 能力
 
 ## 快速开始
 
 在 main 分支的基础上，将 Cloudflare Worker 代码修改为 [worker.js][1] 中的代码，然后点击下方的 Deploy 按钮，快速部署本项目
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFloatSheep%2FQwen-Post-Summary%2Ftree%2Fvercel&env=SUMMARY_API%2CPROXY_ENABLE&envDescription=SUMMARY_API%20%E4%B8%BA%20Cloudflare%20Worker%20%E6%89%80%E7%BB%99%E5%87%BA%E7%9A%84%E5%9F%9F%E5%90%8D%EF%BC%8CPROXY_ENABLE%20%E8%AF%B7%E5%A1%AB%E5%86%99%20false&output-directory=.%2Fdist)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFloatSheep%2FQwen-Post-Summary%2Ftree%2Fvercel&env=SUMMARY_API,ALLOWED_ORIGINS&envDefaults=%7B%22SUMMARY_API%22%3A%22https%3A%2F%2Fabc.worker.dev%22%2C%22ALLOWED_ORIGINS%22%3A%22hesiy.cn%2Cgithub.com%22%7D&envDescription=SUMMARY_API%3A%20Worker%20API%20URL%20%2F%20ALLOWED_ORIGINS%3A%20%E5%85%81%E8%AE%B8%E8%AE%BF%E9%97%AE%E7%9A%84%E5%9F%9F%E5%90%8D)
 
 `SUMMARY_API` 为 Cloudflare Worker 绑定的域名
-
-`PROXY_ENABLE` 请填写 false，**勿动**
 
 `ALLOWED_ORIGINS` 填写自己的域名，多个请用英文逗号隔开
 
